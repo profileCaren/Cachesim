@@ -44,6 +44,8 @@ public class Main {
         int blockSize = Integer.parseInt(args[2]); // e.g., 16 (16B）
         int numberOfWays = Integer.parseInt(args[3]); // e.g., 4
 
+        numberOfWays = numberOfWays == 0 ? (cacheSize / blockSize) : numberOfWays; // for fully associative
+
         // 2. compute some necessary value
         int blockNum = cacheSize / blockSize; // e.g., 32768
         int setNum = blockNum / numberOfWays; // e.g., 8192
@@ -69,8 +71,14 @@ public class Main {
 
             // parse the address and get the index.
             String biAddress = hexToBin(address);
-            int index = Integer.parseInt(biAddress.substring(biAddress.length() - bitsToOffset - bitsToIndex,
-                    biAddress.length() - bitsToOffset) ,2);
+            int index;
+            if(numberOfWays == blockNum) { // special case for fully associative
+                index = 0;
+            }else{
+                index = Integer.parseInt(biAddress.substring(biAddress.length() - bitsToOffset - bitsToIndex,
+                        biAddress.length() - bitsToOffset) ,2);
+            }
+
 
             // find the set according to the index.
             HashMap<String, Block> set = cache.get(index);
@@ -91,12 +99,10 @@ public class Main {
                 coldMiss ++;
             }else{
                 // cache miss (capacity miss
-                boolean isDone = false;
                 String tagToBeReplaced = findBlockToEvict(set);
 
                 set.remove(tagToBeReplaced);
                 set.put(tag, new Block(true, tag, 0));
-
             }
 
         }
