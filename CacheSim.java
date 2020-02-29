@@ -12,6 +12,9 @@ import java.util.Map;
 class Block{
     boolean isValid;
     String tag;
+
+    // will have a pretty bad performance in fully-associative cache,
+    // as it takes O(n) to update all the lruBits. the performance of 4-way set associative would be acceptable
     int lruBits;
 
     public Block(boolean isValid, String tag, int lruBits) {
@@ -25,7 +28,7 @@ class Block{
 class Cache{
 
 }
-public class Main {
+public class CacheSim {
 
     public static void main(String[] args) throws IOException {
         // 1. read arguments (FILE_NAME, TOTAL_CACHE_SIZE, CACHE_BLOCK_SIZE, NUMBER_OF_WAYS)
